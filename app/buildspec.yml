@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_REPO_NAME: mythicalmysfits/service
+    IMAGE_TAG: latest
+    SERVICE_NAME: MythicalMysfits-Service
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+  pre_build:
+    commands:
+      - echo Installing Node dependencies and building the service bundle...
+      - npm --prefix ./app ci
+      - npm --prefix ./app run build
+      - |
+        if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then
+          export IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+        fi
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - export IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -f app/Dockerfile -t $IMAGE_REPO_NAME:$IMAGE_TAG app
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $IMAGE_URI
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $IMAGE_URI
+      - echo Completed pushing Docker image. Deploying Docker image to AWS Fargate on `date`
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$SERVICE_NAME" "$IMAGE_URI" > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
