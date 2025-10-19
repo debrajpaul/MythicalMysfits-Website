@@ -1,6 +1,7 @@
 import path = require('path');
 import {
   Stack,
+  StackProps,
   aws_iam as iam,
   aws_s3 as s3,
   aws_cloudfront as cloudfront,
@@ -10,8 +11,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export class WebApplicationStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?:StackProps) {
+    super(scope, id, props);
 
     // The code that defines your stack goes here
     const webAppRoot = path.resolve(__dirname, '..', '..', 'web');

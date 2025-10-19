@@ -19,7 +19,7 @@ export class EcsStack extends Stack {
   public readonly ecsService: ecsPatterns.NetworkLoadBalancedFargateService;
 
   constructor(scope: Construct, id:string, props: EcsStackProps) {
-    super(scope, id);
+    super(scope, id, props);
 
     // The code that defines your stack goes here
     this.ecsCluster = new ecs.Cluster(this, "Cluster", {
