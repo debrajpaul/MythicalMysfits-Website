@@ -71,7 +71,7 @@ export class CiCdStack extends Stack {
       }),
     );
 
-    // let's define the CodePipeline Source action which specifies where to obtain the web app source
+    // let's define the CodePipeline Source action which specifies where to obtain the web app sources
     const sourceOutput = new codepipeline.Artifact();
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
     actionName: 'GitHub_Source',
