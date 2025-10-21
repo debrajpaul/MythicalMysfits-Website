@@ -43,9 +43,12 @@ export class CiCdStack extends Stack {
           AWS_DEFAULT_REGION: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: Aws.REGION
-          }
+          },
+          REPOSITORY_URI: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: props.ecrRepository.repositoryUri },
+          CONTAINER_NAME: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: 'mythicalmysfits/service' },
         }
-      }
+      },
+      buildSpec: codebuild.BuildSpec.fromSourceFilename('buildspec.yml'),
     });
 
     // Add permissions for the CodeBuild project to pull and push images to/from the ECR repository
