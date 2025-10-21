@@ -48,7 +48,7 @@ export class CiCdStack extends Stack {
           CONTAINER_NAME: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: 'mythicalmysfits/service' },
         }
       },
-      buildSpec: codebuild.BuildSpec.fromSourceFilename('buildspec.yml'),
+      buildSpec: codebuild.BuildSpec.fromSourceFilename('app/buildspec.yml'),
     });
 
     // Add permissions for the CodeBuild project to pull and push images to/from the ECR repository
