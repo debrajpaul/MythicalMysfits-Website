@@ -45,7 +45,7 @@ export class CiCdStack extends Stack {
             value: Aws.REGION
           },
           REPOSITORY_URI: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: props.ecrRepository.repositoryUri },
-          CONTAINER_NAME: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: 'mythicalmysfits/service' },
+          SERVICE_NAME: { type: codebuild.BuildEnvironmentVariableType.PLAINTEXT, value: 'MythicalMysfits-Service' },
         }
       },
       buildSpec: codebuild.BuildSpec.fromSourceFilename('buildspec.yml'),
