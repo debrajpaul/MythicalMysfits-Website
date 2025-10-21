@@ -9,7 +9,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 18
   pre_build:
     commands:
       - echo Installing Node dependencies and building the service bundle...
