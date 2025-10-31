@@ -28,6 +28,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.913.0",
+    "@aws-sdk/lib-dynamodb": "^3.913.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
   }
