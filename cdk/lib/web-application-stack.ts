@@ -2,12 +2,12 @@ import path = require('path');
 import {
   Stack,
   StackProps,
+  CfnOutput,
   aws_iam as iam,
   aws_s3 as s3,
   aws_cloudfront as cloudfront,
   aws_s3_deployment as s3deploy
 } from 'aws-cdk-lib';
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export class WebApplicationStack extends Stack {
@@ -61,7 +61,7 @@ export class WebApplicationStack extends Stack {
       retainOnDelete: false
     });
 
-    new cdk.CfnOutput(this, "CloudFrontURL", {
+    new CfnOutput(this, "CloudFrontURL", {
       description: "The CloudFront distribution URL",
       value: "https://" + cdn.distributionDomainName
     });
