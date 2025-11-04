@@ -1,7 +1,7 @@
 # MythicalMysfits-Website
 Build a Modern Application on AWS (Typescript)
 
-![mysfits-welcome](/images/module-1/mysfits-welcome.png)
+![mysfits-welcome](/mysfits-welcome.png)
 
 ### Welcome to the **Python** version of the Build a Modern Application on AWS Workshop!
 
@@ -21,7 +21,7 @@ Please be sure to terminate all of the resources created during this workshop to
 
 ### Application Architecture
 
-![Application Architecture](/images/arch-diagram.png)
+![Application Architecture](/arch-diagram.png)
 
 The Mythical Mysfits website serves it's static content from Amazon S3 with Amazon CloudFront, provides a microservice API backend deployed as a container through AWS Fargate on Amazon ECS, stores data in a managed NoSQL database provided by Amazon DynamoDB, with authentication and authorization for the application enabled through AWS API Gateway and it's integration with Amazon Cognito.  The user website clicks will be sent as records to an Amazon Kinesis Firehose Delivery stream where those records will be processed by serverless AWS Lambda functions and then stored in Amazon S3.
 
