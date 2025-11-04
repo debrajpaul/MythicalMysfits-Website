@@ -9,27 +9,33 @@ import { CiCdStack } from "../lib/cicd-stack";
 import { DynamoDbStack } from "../lib/dynamodb-stack";
 import { CognitoStack } from "../lib/cognito-stack";
 import { APIGatewayStack } from "../lib/apigateway-stack";
+import { XRayStack } from "../lib/xray-stack";
+import { SageMakerStack } from "../lib/sagemaker-stack";
+import { KinesisFirehoseStack } from "../lib/kinesis-firehose-stack";
 
 const env = {
   region: 'ap-south-1',
 };
-
-// 1 deploy
+// 1st:- need to excute it
+// destroy s3 backet
+// destroy ECR repo
+// destroy DynamoDB table
+// deploy
 const app = new App();
 new WebApplicationStack(app, "MythicalMysfits-Website-Showcase",{env});
 const networkStack = new NetworkStack(app, "MythicalMysfits-Network", {env});
 const ecrStack = new EcrStack(app, "MythicalMysfits-ECR", {env});
-// need to excute it
+// 2nd:- need to excute it
 // aws ecr get-login-password | docker login --username AWS --password-stdin $(aws sts get-caller-identity --query Account --output text).dkr.ecr.$(aws configure get region).amazonaws.com
 // docker build --platform linux/amd64 . -t $(aws sts get-caller-identity --query Account --output text).dkr.ecr.$(aws configure get region).amazonaws.com/mythicalmysfits/service:latest
 // docker push $(aws sts get-caller-identity --query Account --output text).dkr.ecr.$(aws configure get region).amazonaws.com/mythicalmysfits/service:latest
-// 2 deploy 
+// then deploy 
 const ecsStack = new EcsStack(app, "MythicalMysfits-ECS", {
     env,
     vpc: networkStack.vpc,
     ecrRepository: ecrStack.ecrRepository
 });
-// need create secrets manager
+// 3rd:- need create secrets manager
 /* aws secretsmanager create-secret \
   --name github-token-secret-name \
   --secret-string <your-github-pat>
@@ -47,7 +53,7 @@ const dynamoDbStack = new DynamoDbStack(app, "MythicalMysfits-DynamoDB", {
     vpc: networkStack.vpc,
     fargateService: ecsStack.ecsService.service
 });
-// go back to root then run it
+// 4th:- go back to root then run it
 // aws dynamodb batch-write-item --request-items file://data/populate-dynamodb.json
 // aws dynamodb scan --table-name MysfitsTable
 const cognito = new CognitoStack(app,  "MythicalMysfits-Cognito", { env });
@@ -57,3 +63,14 @@ new APIGatewayStack(app, "MythicalMysfits-APIGateway", {
   loadBalancerArn: ecsStack.ecsService.loadBalancer.loadBalancerArn,
   loadBalancerDnsName: ecsStack.ecsService.loadBalancer.loadBalancerDnsName
 });
+// 5th:- go back to web then replace it
+// https://REPLACE_ME_WITH_API_ID.execute-api.REPLACE_ME_WITH_REGION.amazonaws.com/prod/mysfits
+// MythicalMysfits-Cognito.CognitoUserPool = ap-south-1_xfstTG0xI
+// MythicalMysfits-Cognito.CognitoUserPoolClient = 49d9675oo6pgpn894a7ei9cog
+// yet to be implement
+// new KinesisFirehoseStack(app, "MythicalMysfits-KinesisFirehose", {
+//     env,
+//     table: dynamoDbStack.table
+// });
+// new XRayStack(app, "MythicalMysfits-XRay",{env});
+// new SageMakerStack(app, "MythicalMysfits-SageMaker",{env});

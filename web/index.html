@@ -149,9 +149,9 @@
   </body>
   <script>
 
-    var mysfitsApiEndpoint = 'https://7pqzui01x4.execute-api.ap-south-1.amazonaws.com/prod'
-    var cognitoUserPoolId = 'ap-south-1_xfstTG0xI';  // example: 'us-east-1_abcd12345'
-    var cognitoUserPoolClientId = '49d9675oo6pgpn894a7ei9cog'; // example: 'abcd12345abcd12345abcd12345'
+    var mysfitsApiEndpoint = 'https://2euejd3x3b.execute-api.ap-south-1.amazonaws.com/prod'
+    var cognitoUserPoolId = 'ap-south-1_vX3NyRqwF';  // example: 'us-east-1_abcd12345'
+    var cognitoUserPoolClientId = '37ult4v7h37746qoinqbjtckbo'; // example: 'abcd12345abcd12345abcd12345'
     var awsRegion = 'ap-south-1'; // example: 'us-east-1' or 'eu-west-1' etc.
 
     var app = angular.module('mysfitsApp', []);
@@ -178,9 +178,9 @@
     }
 
     function initializeStorage() {
-      var identityPoolId = cognitoUserPoolId;//
-      var userPoolId = cognitoUserPoolId; //
-      var clientId = cognitoUserPoolClientId;//
+      var identityPoolId = cognitoUserPoolId;
+      var userPoolId = cognitoUserPoolId;
+      var clientId = cognitoUserPoolClientId;
       var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
 
       localStorage.setItem('identityPoolId', identityPoolId);

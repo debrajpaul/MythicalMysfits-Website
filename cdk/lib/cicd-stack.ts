@@ -6,7 +6,6 @@ import {
   aws_iam as iam,
   aws_ecr as ecr,
   aws_ecs as ecs,
-  aws_ssm as ssm,
   aws_codebuild as codebuild,
   aws_codepipeline as codepipeline,
   aws_codepipeline_actions as codepipeline_actions,
