@@ -1,7 +1,7 @@
 import {
   Stack,
   StackProps,
-  aws_ecr as ecr,
+  RemovalPolicy,
   aws_iam as iam,
   aws_ecs as ecs,
   aws_ec2 as ec2,
@@ -41,7 +41,9 @@ export class DynamoDbStack extends Stack {
         partitionKey: {
             name: "MysfitId",
             type: dynamodb.AttributeType.STRING
-        }
+        },
+        billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+        removalPolicy: RemovalPolicy.DESTROY // use RETAIN for production
     });
     this.table.addGlobalSecondaryIndex({
         indexName: "LawChaosIndex",
@@ -53,8 +55,6 @@ export class DynamoDbStack extends Stack {
             name: 'MysfitId',
             type: dynamodb.AttributeType.STRING
         },
-        readCapacity: 5,
-        writeCapacity: 5,
         projectionType: dynamodb.ProjectionType.ALL
     });
     this.table.addGlobalSecondaryIndex({
@@ -67,8 +67,6 @@ export class DynamoDbStack extends Stack {
             name: 'MysfitId',
             type: dynamodb.AttributeType.STRING
         },
-        readCapacity: 5,
-        writeCapacity: 5,
         projectionType: dynamodb.ProjectionType.ALL
     });
 
