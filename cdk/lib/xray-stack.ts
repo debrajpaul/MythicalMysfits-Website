@@ -20,10 +20,6 @@ export class XRayStack extends Stack {
     super(scope, id, props);
 
     // The code that defines your stack goes here
-    const lambdaRepository = new codecommit.Repository(this, "QuestionsLambdaRepository", {
-      repositoryName: "MythicalMysfits-QuestionsLambdaRepository"
-    });
-
     const table = new dynamodb.Table(this, "Table", {
       tableName: "MysfitsQuestionsTable",
       partitionKey: {
@@ -171,16 +167,6 @@ export class XRayStack extends Stack {
           'method.response.header.Access-Control-Allow-Origin': true,
         },
       }]
-    });
-
-    new CfnOutput(this, "questionsRepositoryCloneUrlHttp", {
-      value: lambdaRepository.repositoryCloneUrlHttp,
-      description: "Questions Lambda Repository Clone Url HTTP"
-    });
-
-    new CfnOutput(this, "questionsRepositoryCloneUrlSsh", {
-      value: lambdaRepository.repositoryCloneUrlSsh,
-      description: "Questions Lambda Repository Clone Url SSH"
     });
   }
 }

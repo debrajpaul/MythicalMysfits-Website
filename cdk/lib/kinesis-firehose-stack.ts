@@ -2,7 +2,6 @@ import {
   Aws,
   Stack,
   Duration,
-  CfnOutput,
   StackProps,
   aws_s3 as s3,
   aws_iam as iam,
@@ -23,11 +22,6 @@ export class KinesisFirehoseStack extends Stack {
 
   constructor(scope: Construct, id:string, props:KinesisFirehoseStackProps) {
     super(scope, id, props);
-
-    // The code that defines your stack goes here
-    const lambdaRepository = new codecommit.Repository(this, "ClicksProcessingLambdaRepository", {
-      repositoryName: "MythicalMysfits-ClicksProcessingLambdaRepository"
-    });
     
     const clicksDestinationBucket = new s3.Bucket(this, "Bucket", {
       versioned: true
@@ -37,8 +31,10 @@ export class KinesisFirehoseStack extends Stack {
     lambdaFunctionPolicy.addActions("dynamodb:GetItem");
     lambdaFunctionPolicy.addResources(props.table.tableArn);
     
+    const streamingAppRoot = path.join(__dirname, '../../app');
+
     const mysfitsClicksProcessor = new NodejsFunction(this, "Function", {
-      entry: path.join(__dirname, '../../app/streaming/streamProcessor.ts'),
+      entry: path.join(streamingAppRoot, 'streaming/streamProcessor.ts'),
       handler: "handler",
       runtime: lambda.Runtime.NODEJS_18_X,
       description: "An Amazon Kinesis Firehose stream processor that enriches click records" +
@@ -51,8 +47,10 @@ export class KinesisFirehoseStack extends Stack {
       environment: {
         MYSFITS_API_URL: "https://2euejd3x3b.execute-api.ap-south-1.amazonaws.com/prod" 
       },
+      projectRoot: streamingAppRoot,
+      depsLockFilePath: path.join(streamingAppRoot, 'package-lock.json'),
       bundling: {
-        tsconfig: path.join(__dirname, '../../app/tsconfig.json'),
+        tsconfig: path.join(streamingAppRoot, 'tsconfig.json'),
         target: "node18"
       }
     });
@@ -209,16 +207,5 @@ export class KinesisFirehoseStack extends Stack {
         ]
       }
     );
-    
-    new CfnOutput(this, "kinesisRepositoryCloneUrlHttp", {
-      value: lambdaRepository.repositoryCloneUrlHttp,
-      description: "Clicks Processing Lambda Repository Clone Url HTTP"
-    });
-    
-    new CfnOutput(this, "kinesisRepositoryCloneUrlSsh", {
-      value: lambdaRepository.repositoryCloneUrlSsh,
-      description: "Clicks Processing Lambda Repository Clone Url SSH"
-    });
-
   }
 }

@@ -67,10 +67,10 @@ new APIGatewayStack(app, "MythicalMysfits-APIGateway", {
 // https://REPLACE_ME_WITH_API_ID.execute-api.REPLACE_ME_WITH_REGION.amazonaws.com/prod/mysfits
 // MythicalMysfits-Cognito.CognitoUserPool = ap-south-1_xfstTG0xI
 // MythicalMysfits-Cognito.CognitoUserPoolClient = 49d9675oo6pgpn894a7ei9cog
+new KinesisFirehoseStack(app, "MythicalMysfits-KinesisFirehose", {
+  env,
+  table: dynamoDbStack.table,
+});
+new XRayStack(app, "MythicalMysfits-XRay",{env});
 // yet to be implement
-// new KinesisFirehoseStack(app, "MythicalMysfits-KinesisFirehose", {
-//     env,
-//     table: dynamoDbStack.table
-// });
-// new XRayStack(app, "MythicalMysfits-XRay",{env});
-// new SageMakerStack(app, "MythicalMysfits-SageMaker",{env});
+new SageMakerStack(app, "MythicalMysfits-SageMaker",{env});
