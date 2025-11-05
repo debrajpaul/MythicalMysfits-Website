@@ -1,24 +1,48 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
-import { mysfitsTableClient } from './mysfitsTableClient';
+import { FilterCategory, mysfitsTableClient } from './mysfitsTableClient';
 
 const app = express();
 app.disable('x-powered-by');
 app.use(cors());
 
+const sendJson = (res: Response, payload: unknown, status = 200): void => {
+  res.status(status).type('application/json').send(JSON.stringify(payload));
+};
+
+const isFilterCategory = (value: string): value is FilterCategory =>
+  value === 'GoodEvil' || value === 'LawChaos';
+
 app.get('/', (_req: Request, res: Response) => {
-  res.json({ message: 'Nothing here, used for health check. Try /mysfits instead.' });
+  sendJson(res, { message: 'Nothing here, used for health check. Try /mysfits instead.' });
 });
 
 app.get('/mysfits', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const filterCategory = req.query.filter;
-    if (typeof filterCategory === 'string' && filterCategory.length > 0) {
-      const filterValue = req.query.value;
-      if (typeof filterValue !== 'string' || filterValue.length === 0) {
-        res
-          .status(400)
-          .json({ message: 'Query parameter "value" is required when using "filter".' });
+    const rawFilter =
+      typeof req.query.filter === 'string' && req.query.filter.length > 0
+        ? req.query.filter
+        : undefined;
+
+    if (rawFilter) {
+      if (!isFilterCategory(rawFilter)) {
+        sendJson(
+          res,
+          { message: 'Query parameter "filter" must be either "GoodEvil" or "LawChaos".' },
+          400,
+        );
+        return;
+      }
+
+      const filterCategory: FilterCategory = rawFilter;
+
+      const filterValue =
+        typeof req.query.value === 'string' && req.query.value.length > 0
+          ? req.query.value
+          : undefined;
+
+      if (!filterValue) {
+        sendJson(res, { message: 'Query parameter "value" is required when using "filter".' }, 400);
         return;
       }
 
@@ -26,12 +50,12 @@ app.get('/mysfits', async (req: Request, res: Response, next: NextFunction) => {
         filter: filterCategory,
         value: filterValue,
       });
-      res.json(response);
+      sendJson(res, response);
       return;
     }
 
     const response = await mysfitsTableClient.getAllMysfits();
-    res.json(response);
+    sendJson(res, response);
   } catch (error) {
     next(error);
   }
@@ -41,7 +65,7 @@ app.get('/mysfits/:mysfitId', async (req: Request, res: Response, next: NextFunc
   try {
     const { mysfitId } = req.params;
     const response = await mysfitsTableClient.getMysfit(mysfitId);
-    res.json(response);
+    sendJson(res, response);
   } catch (error) {
     next(error);
   }
@@ -51,7 +75,7 @@ app.post('/mysfits/:mysfitId/like', async (req: Request, res: Response, next: Ne
   try {
     const { mysfitId } = req.params;
     const response = await mysfitsTableClient.likeMysfit(mysfitId);
-    res.json(response);
+    sendJson(res, response);
   } catch (error) {
     next(error);
   }
@@ -61,7 +85,7 @@ app.post('/mysfits/:mysfitId/adopt', async (req: Request, res: Response, next: N
   try {
     const { mysfitId } = req.params;
     const response = await mysfitsTableClient.adoptMysfit(mysfitId);
-    res.json(response);
+    sendJson(res, response);
   } catch (error) {
     next(error);
   }
@@ -69,10 +93,19 @@ app.post('/mysfits/:mysfitId/adopt', async (req: Request, res: Response, next: N
 
 app.use((err: unknown, _req: Request, res: Response) => {
   console.error(err);
-  res.status(500).json({ message: 'Failed to load mysfits data.' });
+  if (err instanceof Error && /not found/i.test(err.message)) {
+    sendJson(res, { message: err.message }, 404);
+    return;
+  }
+  sendJson(res, { message: 'Failed to load mysfits data.' }, 500);
 });
 
 const port = Number(process.env.PORT) || 8080;
-app.listen(port, () => {
-  console.log(`Mythical Mysfits API listening on port ${port}`);
-});
+
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Mythical Mysfits API listening on port ${port}`);
+  });
+}
+
+export { app };
