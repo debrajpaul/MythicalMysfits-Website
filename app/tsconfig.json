@@ -10,9 +10,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "rootDir": "service",
-    "outDir": "dist"
+    "rootDir": ".",
+    "outDir": "dist",
+    "types": ["node"]
   },
-  "include": ["service"],
+  "include": ["service", "streaming"],
   "exclude": ["node_modules", "dist"]
 }

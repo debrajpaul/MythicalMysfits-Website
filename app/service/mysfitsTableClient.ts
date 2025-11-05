@@ -9,6 +9,8 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const TABLE_NAME = 'MysfitsTable';
 
+export type FilterCategory = 'GoodEvil' | 'LawChaos';
+
 export interface MysfitSummary {
   mysfitId: string;
   name: string;
@@ -19,7 +21,7 @@ export interface MysfitSummary {
 }
 
 export interface QueryParams {
-  filter: string;
+  filter: FilterCategory;
   value: string;
 }
 

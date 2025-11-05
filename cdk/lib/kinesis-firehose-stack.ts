@@ -12,7 +12,9 @@ import {
   aws_apigateway as apigateway,
   aws_kinesisfirehose as kinesisfirehose,
 } from 'aws-cdk-lib';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 interface KinesisFirehoseStackProps extends StackProps {
   table: dynamodb.Table;
@@ -35,19 +37,23 @@ export class KinesisFirehoseStack extends Stack {
     lambdaFunctionPolicy.addActions("dynamodb:GetItem");
     lambdaFunctionPolicy.addResources(props.table.tableArn);
     
-    const mysfitsClicksProcessor = new lambda.Function(this, "Function", {
-      handler: "streamProcessor.processRecord",
-      runtime: lambda.Runtime.PYTHON_3_6,
+    const mysfitsClicksProcessor = new NodejsFunction(this, "Function", {
+      entry: path.join(__dirname, '../../app/streaming/streamProcessor.ts'),
+      handler: "handler",
+      runtime: lambda.Runtime.NODEJS_18_X,
       description: "An Amazon Kinesis Firehose stream processor that enriches click records" +
         " to not just include a mysfitId, but also other attributes that can be analyzed later.",
       memorySize: 128,
-      code: lambda.Code.fromAsset("../../lambda-streaming-processor"),
       timeout: Duration.seconds(30),
       initialPolicy: [
         lambdaFunctionPolicy
       ],
       environment: {
-        MYSFITS_API_URL: "REPLACE_ME_API_URL" 
+        MYSFITS_API_URL: "https://2euejd3x3b.execute-api.ap-south-1.amazonaws.com/prod" 
+      },
+      bundling: {
+        tsconfig: path.join(__dirname, '../../app/tsconfig.json'),
+        target: "node18"
       }
     });
     
